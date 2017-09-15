@@ -1,65 +1,92 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
+    "parameters": {
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        }
+    },
     "variables": {
         "apiVersion-Windows": "2016-04-30-preview",
         "location": "[resourceGroup().location]",
-        "JumpBoxVMName": "JumpBox"
+        "group-random": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",        
+        "cdcdc": "cdcdc",
+        "cdcSLES": "cdcSLES",
+        "cdcWeb1": "cdcWeb1",
+        "cdcTen1": "cdcTen1",
+        "cdcKALI": "cdcKALI",
+        "cdcCentOS": "cdcCentOS",
+        "cdcDSMa": "cdcDSMa",
+        "cdcDSMb": "cdcDSMb",
+        "cdcdocker": "cdcdocker",
+        "cdcdc-NIC": "cdcdc-NIC",
+        "cdcSLES-NIC": "cdcSLES-NIC",
+        "cdcWeb1-NIC": "cdcWeb1-NIC",
+        "cdcTen1-NIC": "cdcTen1-NIC",
+        "cdcKALI-NIC": "cdcKALI-NIC",
+        "cdcCentOS-NIC": "cdcCentOS-NIC",
+        "cdcDSMa-NIC": "cdcDSMa-NIC",
+        "cdcDSMb-NIC": "cdcDSMb-NIC",
+        "cdcdocker-NIC": "cdcdocker-NIC"
     },
     "resources": [
         {
-            "comments": "Windows VM - role JumpBox",
-            "apiVersion": "[variables('apiVersion-network')]",
-            "name": "[variables('JumpBoxVMName')]",
+            "comments": "cdcdc",
+            "type": "Microsoft.Compute/virtualMachines",            
+            "apiVersion": "[variables('apiVersion-Windows')]",
+            "name": "[concat(variables('cdcdc'), '-', variables('group-random'))]",
             "location": "[variables('location')]",
             "properties": {
+                "osProfile": {
+                    "computerName": "[variables('cdcdc')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "provisionVmAgent": "true"
+                    }
+                },
                 "hardwareProfile": {
                     "vmSize": "Basic_A1"
                 },
                 "storageProfile": {
                     "imageReference": {
-                        "publisher": "MicrosoftWindowsDesktop",
-                        "offer": "Windows-10",
-                        "sku": "RS2-Pro",
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2008-R2-SP1",
                         "version": "latest"
                     },
-                    "osDisk": {
-                        "osType": "Windows",
-                        "createOption": "FromImage",
-                        "caching": "ReadWrite",
-                        "managedDisk": {
-                            "storageAccountType": "Standard_LRS"
+                "osDisk": {
+                    "osType": "Windows",
+                    "createOption": "FromImage",
+                    "caching": "ReadWrite",
+                    "managedDisk": {
+                        "storageAccountType": "Standard_LRS"
                         }
                     },
                     "dataDisks": []
                 },
-                "osProfile": {
-                    "computerName": "DSM-Linux",
-                    "adminUsername": "trend-admin",
-                    "windowsConfiguration": {
-                        "provisionVMAgent": true,
-                        "enableAutomaticUpdates": true
-                    },
-                    "secrets": []
-                },
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_JB_Nic_name'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('cdcdc-NIC'), '-', variables('group-random'))]"
                         }
                     ]
                 },
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
-                        "enabled": true,
-                        "storageUri": "https://ktyxvm5ulngai.blob.core.windows.net/"
+                        "enabled": false
                     }
                 }
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_JB_Nic_name'))]"
-            ]
+            }
         }
-    ]
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
 }

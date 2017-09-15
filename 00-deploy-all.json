@@ -1,44 +1,59 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "resources": [ 
-    { 
-        "apiVersion": "2017-05-10", 
-        "name": "Storage-and-Network", 
-        "type": "Microsoft.Resources/deployments", 
-        "properties": { 
-            "mode": "incremental", 
-            "templateLink": {
-                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/01-deploy-storage-and-network.json",
-                "contentVersion": "1.0.0.0"
-                }
-            } 
-        },
-    { 
-        "apiVersion": "2017-05-10", 
-        "name": "Network-Security", 
-        "type": "Microsoft.Resources/deployments", 
-        "properties": { 
-            "mode": "incremental", 
-            "templateLink": {
-                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/02-network-security.json",
-                "contentVersion": "1.0.0.0"
-                }
-            } 
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "Storage-and-Network",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/01-deploy-storage-and-network.json",
+          "contentVersion": "1.0.0.0"
         }
-    { 
-        "apiVersion": "2017-05-10", 
-        "name": "Network-Adapters", 
-        "type": "Microsoft.Resources/deployments", 
-        "properties": { 
-            "mode": "incremental", 
-            "templateLink": {
-                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/03-network-adapters.json",
-                "contentVersion": "1.0.0.0"
-                }
-            } 
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "Network-Security",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/02-network-security.json",
+          "contentVersion": "1.0.0.0"
         }
-    
-    ] 
-} 
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "Network-Adapters",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/03-network-adapters.json",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "Deploy-VMs",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/04-deploy-VMs.json",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    }
+  ]
+}
