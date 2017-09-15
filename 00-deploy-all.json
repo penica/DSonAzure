@@ -1,0 +1,31 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "resources": [ 
+    { 
+        "apiVersion": "2017-05-10", 
+        "name": "linkedTemplate", 
+        "type": "Microsoft.Resources/deployments", 
+        "properties": { 
+            "mode": "incremental", 
+            "templateLink": {
+                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/01%20-%20deploy%20storage%20and%20network.json",
+                "contentVersion": "1.0.0.0"
+                }
+            } 
+        },
+    { 
+        "apiVersion": "2017-05-10", 
+        "name": "linkedTemplate", 
+        "type": "Microsoft.Resources/deployments", 
+        "properties": { 
+            "mode": "incremental", 
+            "templateLink": {
+                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/02%20-%20network%20security.json",
+                "contentVersion": "1.0.0.0"
+                }
+            } 
+        }
+    ] 
+} 
