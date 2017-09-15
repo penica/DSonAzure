@@ -34,14 +34,14 @@
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
-            "192.168.1.0/24"
+            "192.168.102.0/24"
           ]
         },
         "subnets": [
           {
             "name": "[variables('subnetName')]",
             "properties": {
-              "addressPrefix": "192.168.1.0/24"
+              "addressPrefix": "192.168.102.0/24"
             }
           }
         ]
