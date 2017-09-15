@@ -5,27 +5,40 @@
     "resources": [ 
     { 
         "apiVersion": "2017-05-10", 
-        "name": "linkedTemplate", 
+        "name": "Storage-and-Network", 
         "type": "Microsoft.Resources/deployments", 
         "properties": { 
             "mode": "incremental", 
             "templateLink": {
-                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/01%20-%20deploy%20storage%20and%20network.json",
+                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/01-deploy-storage-and-network.json",
                 "contentVersion": "1.0.0.0"
                 }
             } 
         },
     { 
         "apiVersion": "2017-05-10", 
-        "name": "linkedTemplate", 
+        "name": "Network-Security", 
         "type": "Microsoft.Resources/deployments", 
         "properties": { 
             "mode": "incremental", 
             "templateLink": {
-                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/02%20-%20network%20security.json",
+                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/02-network-security.json",
                 "contentVersion": "1.0.0.0"
                 }
             } 
         }
+    { 
+        "apiVersion": "2017-05-10", 
+        "name": "Network-Adapters", 
+        "type": "Microsoft.Resources/deployments", 
+        "properties": { 
+            "mode": "incremental", 
+            "templateLink": {
+                "uri": "https://raw.githubusercontent.com/penica/DSonAzure/master/03-network-adapters.json",
+                "contentVersion": "1.0.0.0"
+                }
+            } 
+        }
+    
     ] 
 } 
