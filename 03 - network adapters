@@ -6,18 +6,32 @@
     "variables": {
         "apiVersion-network": "2017-09-01",
         "location": "[resourceGroup().location]",
-        "JumpBoxNic": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+        "group-random": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
         "subnetName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
-        "DSMNIC": "DSM_NIC",
-        "DSMIP": "192.168.1.10",
-        "JumpBoxNIC": "JumpBox_NIC",
-        "JumpBoxIP": "192.168.1.9"
+        "cdcdc-NIC": "cdcdc-NIC",
+        "cdcdc-IP": "192.168.102.10",
+        "cdcSLES-NIC": "cdcSLES-NIC",
+        "cdcSLES-IP": "192.168.102.21",
+        "cdcWeb1-NIC": "cdcWeb1-NIC",
+        "cdcWeb1-IP": "192.168.102.22",
+        "cdcTen1-NIC": "cdcTen1-NIC",
+        "cdcTen1-IP": "192.168.102.39",
+        "cdcKALI-NIC": "cdcKALI-NIC",
+        "cdcKALI-IP": "192.168.102.40",
+        "cdcCentOS-NIC": "cdcCentOS-NIC",
+        "cdcCentOS-IP": "192.168.102.75",
+        "cdcDSMa-NIC": "cdcDSMa-NIC",
+        "cdcDSMa-IP": "192.168.102.96",
+        "cdcDSMb-NIC": "cdcDSMb-NIC",
+        "cdcDSMb-IP": "192.168.102.97",
+        "cdcdocker-NIC": "cdcdocker-NIC",
+        "cdcdocker-IP": "192.168.102.125"
     },
     "resources": [
         {
             "comments": "Windows JumpBox NIC - NAT to external",
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[variables('JumpBoxNIC')]",
+            "name": "[concat(variables('cdcdc-NIC'), '-', variables('group-random'))]",
             "apiVersion": "[variables('apiVersion-network')]",
             "location": "[variables('location')]",
             "properties": {
@@ -25,7 +39,7 @@
                     {
                         "name": "ipconfig1",
                         "properties": {
-                            "privateIPAddress": "[variables('JumpBoxIP')]",
+                            "privateIPAddress": "[variables('cdcdc-IP')]",
                             "privateIPAllocationMethod": "Static",
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('subnetName'))]"
@@ -52,7 +66,7 @@
         {
             "comments": "Windows Deep Security Manager NIC",            
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[variables('DSMNIC')]",
+            "name": "[concat(variables('cdcDSMa-NIC'), '-', variables('group-random'))]",
             "apiVersion": "[variables('apiVersion-network')]",
             "location": "[variables('location')]",
             "properties": {
@@ -60,7 +74,7 @@
                     {
                         "name": "ipconfig1",
                         "properties": {
-                            "privateIPAddress": "[variables('DSMIP')]",
+                            "privateIPAddress": "[variables('cdcDSMa-NIC')]",
                             "privateIPAllocationMethod": "Static",
                             "subnet": {
                                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
