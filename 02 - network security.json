@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    },
+    "variables": {
+        "apiVersion-network": "2017-09-01",
+        "location": "[resourceGroup().location]",
+		"SecurityGroupName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+        "securityRuleName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+        "publicIPName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('SecurityGroupName')]",
+            "apiVersion": "[variables('apiVersion-network')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "[variables('securityRuleName')]",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "3389",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1001,
+                            "direction": "Inbound",
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIPName')]",
+            "apiVersion": "[variables('apiVersion-network')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4
+            }
+        }
+    ]
+}
