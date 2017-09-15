@@ -208,7 +208,7 @@
         }
       },
       {
-        "comments": "cdcDSMa",
+        "comments": "cdcDSMa-IP",
         "type": "Microsoft.Network/networkInterfaces",
         "name": "[concat(variables('cdcDSMa-NIC'), '-', variables('group-random'))]",
         "apiVersion": "[variables('apiVersion-network')]",
