@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    },
+    "variables": {
+        "apiVersion-network": "2017-09-01",
+        "apiVersion-storage": "2017-06-01",        
+		"storageName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+		"networkName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+		"subnetName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+        "location": "[resourceGroup().location]"
+	},
+"resources": [
+    {
+        "type": "Microsoft.Storage/storageAccounts",
+        "sku": {
+            "name": "Standard_LRS",
+            "tier": "Standard"
+        },
+        "kind": "Storage",
+        "name": "[variables('storageName')]",
+        "apiVersion": "[variables('apiVersion-storage')]",
+        "location": "[variables('location')]",
+        "scale": null,
+        "properties": {},
+        "dependsOn": []
+    },    
+    {
+      "apiVersion": "[variables('apiVersion-network')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('networkName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "192.168.1.0/24"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "192.168.1.0/24"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

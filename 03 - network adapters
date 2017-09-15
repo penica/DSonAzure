@@ -1,0 +1,84 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    },
+    "variables": {
+        "apiVersion-network": "2017-09-01",
+        "location": "[resourceGroup().location]",
+        "JumpBoxNic": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+        "subnetName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+        "DSMNIC": "DSM_NIC",
+        "DSMIP": "192.168.1.10",
+        "JumpBoxNIC": "JumpBox_NIC",
+        "JumpBoxIP": "192.168.1.9"
+    },
+    "resources": [
+        {
+            "comments": "Windows JumpBox NIC - NAT to external",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('JumpBoxNIC')]",
+            "apiVersion": "[variables('apiVersion-network')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[variables('JumpBoxIP')]",
+                            "privateIPAllocationMethod": "Static",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('subnetName'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": [],
+                    "appliedDnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetName'))]"
+                }
+            }
+        },
+        {
+            "comments": "Windows Deep Security Manager NIC",            
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('DSMNIC')]",
+            "apiVersion": "[variables('apiVersion-network')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAddress": "[variables('DSMIP')]",
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                                
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": [],
+                    "appliedDnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false
+            }
+        
+        }
+    ] 
+}
