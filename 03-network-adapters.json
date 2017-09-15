@@ -1,98 +1,298 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-    },
+    "parameters": {},
     "variables": {
-        "apiVersion-network": "2017-09-01",
-        "location": "[resourceGroup().location]",
-        "group-random": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
-        "subnetName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
-        "cdcdc-NIC": "cdcdc-NIC",
-        "cdcdc-IP": "192.168.102.10",
-        "cdcSLES-NIC": "cdcSLES-NIC",
-        "cdcSLES-IP": "192.168.102.21",
-        "cdcWeb1-NIC": "cdcWeb1-NIC",
-        "cdcWeb1-IP": "192.168.102.22",
-        "cdcTen1-NIC": "cdcTen1-NIC",
-        "cdcTen1-IP": "192.168.102.39",
-        "cdcKALI-NIC": "cdcKALI-NIC",
-        "cdcKALI-IP": "192.168.102.40",
-        "cdcCentOS-NIC": "cdcCentOS-NIC",
-        "cdcCentOS-IP": "192.168.102.75",
-        "cdcDSMa-NIC": "cdcDSMa-NIC",
-        "cdcDSMa-IP": "192.168.102.96",
-        "cdcDSMb-NIC": "cdcDSMb-NIC",
-        "cdcDSMb-IP": "192.168.102.97",
-        "cdcdocker-NIC": "cdcdocker-NIC",
-        "cdcdocker-IP": "192.168.102.125"
+      "apiVersion-network": "2017-09-01",
+      "location": "[resourceGroup().location]",
+      "group-random": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+      "subnetName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+      "cdcdc-NIC": "cdcdc-NIC",
+      "cdcdc-IP": "192.168.102.10",
+      "cdcSLES-NIC": "cdcSLES-NIC",
+      "cdcSLES-IP": "192.168.102.21",
+      "cdcWeb1-NIC": "cdcWeb1-NIC",
+      "cdcWeb1-IP": "192.168.102.22",
+      "cdcTen1-NIC": "cdcTen1-NIC",
+      "cdcTen1-IP": "192.168.102.39",
+      "cdcKALI-NIC": "cdcKALI-NIC",
+      "cdcKALI-IP": "192.168.102.40",
+      "cdcCentOS-NIC": "cdcCentOS-NIC",
+      "cdcCentOS-IP": "192.168.102.75",
+      "cdcDSMa-NIC": "cdcDSMa-NIC",
+      "cdcDSMa-IP": "192.168.102.96",
+      "cdcDSMb-NIC": "cdcDSMb-NIC",
+      "cdcDSMb-IP": "192.168.102.97",
+      "cdcdocker-NIC": "cdcdocker-NIC",
+      "cdcdocker-IP": "192.168.102.125"
     },
     "resources": [
-        {
-            "comments": "Windows JumpBox NIC - NAT to external",
-            "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat(variables('cdcdc-NIC'), '-', variables('group-random'))]",
-            "apiVersion": "[variables('apiVersion-network')]",
-            "location": "[variables('location')]",
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "privateIPAddress": "[variables('cdcdc-IP')]",
-                            "privateIPAllocationMethod": "Static",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('subnetName'))]"
-                            },
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "IPv4"
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": [],
-                    "appliedDnsServers": []
+      {
+        "comments": "cdcdc",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcdc-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcdc-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "publicIPAddress": {
+                  "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('subnetName'))]"
                 },
-                "enableAcceleratedNetworking": false,
-                "enableIPForwarding": false,
-                "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetName'))]"
-                }
-            }
-        },
-        {
-            "comments": "Windows Deep Security Manager NIC",            
-            "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat(variables('cdcDSMa-NIC'), '-', variables('group-random'))]",
-            "apiVersion": "[variables('apiVersion-network')]",
-            "location": "[variables('location')]",
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "privateIPAddress": "[variables('cdcDSMa-NIC')]",
-                            "privateIPAllocationMethod": "Static",
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
-                                
-                            },
-                            "primary": true,
-                            "privateIPAddressVersion": "IPv4"
-                        }
-                    }
-                ],
-                "dnsSettings": {
-                    "dnsServers": [],
-                    "appliedDnsServers": []
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
                 },
-                "enableAcceleratedNetworking": false,
-                "enableIPForwarding": false
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
             }
-        
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false,
+          "networkSecurityGroup": {
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetName'))]"
+          }
         }
-    ] 
-}
+      },
+      {
+        "comments": "cdcSLES",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcSLES-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcSLES-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      },
+      {
+        "comments": "cdcWeb1",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcWeb1-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcWeb1-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      },
+      {
+        "comments": "cdcTen1",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcTen1-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcTen1-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      },
+      {
+        "comments": "cdcKALI",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcKALI-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcKALI-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      },
+      {
+        "comments": "cdcCentOS",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcCentOS-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcCentOS-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      },
+      {
+        "comments": "cdcDSMa",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcDSMa-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcDSMa-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      },
+      {
+        "comments": "cdcDSMb",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcDSMb-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcDSMb-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      },
+      {
+        "comments": "cdcdocker",
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[concat(variables('cdcdocker-NIC'), '-', variables('group-random'))]",
+        "apiVersion": "[variables('apiVersion-network')]",
+        "location": "[variables('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAddress": "[variables('cdcdocker-IP')]",
+                "privateIPAllocationMethod": "Static",
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                },
+                "primary": true,
+                "privateIPAddressVersion": "IPv4"
+              }
+            }
+          ],
+          "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+          },
+          "enableAcceleratedNetworking": false,
+          "enableIPForwarding": false
+        }
+      }
+    ]
+  }
