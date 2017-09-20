@@ -1,8 +1,13 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
+    
     "parameters": {},
-    "variables": {},
+    "variables": {
+        "templateBaseUrl": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/postgresql-on-ubuntu/",
+        "sharedTemplateUrl": "[concat(variables('templateBaseUrl'), 'shared-resources.json')]",
+        "vmTemplateUrl": "[concat(variables('templateBaseUrl'), 'database-2disk-resources.json')]"
+    },
     "resources": [
 // #Create Storage 
     {
