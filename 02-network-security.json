@@ -11,7 +11,7 @@
     "resources": [
         {
             "type": "Microsoft.Network/networkSecurityGroups",
-            "name": "[variables('SecurityGroupName')]",
+            "name": "[variables('randomizer')]",
             "apiVersion": "[variables('apiVersion-network')]",
             "location": "[variables('location')]",
             "properties": {
