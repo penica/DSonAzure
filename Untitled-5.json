@@ -1,0 +1,179 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+          "type": "string",
+          "defaultValue": "trend-admin"
+        },
+        "adminPassword": {
+          "type": "securestring",
+          "defaultValue": "TrendMicro2017!",
+          "metadata": {
+            "description": "Default password is: TrendMicro2017!"
+          }
+        }
+      },
+      "variables": {
+        "uniqueName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+        "location": "[resourceGroup().location]",
+        "cdcdc-NIC": "cdcdc-NIC",
+        "cdcdc-IP": "192.168.102.10",
+        "cdcSLES-NIC": "cdcSLES-NIC",
+        "cdcSLES-IP": "192.168.102.21",
+        "cdcWeb1-NIC": "cdcWeb1-NIC",
+        "cdcWeb1-IP": "192.168.102.22",
+        "cdcTen1-NIC": "cdcTen1-NIC",
+        "cdcTen1-IP": "192.168.102.39",
+        "cdcKALI-NIC": "cdcKALI-NIC",
+        "cdcKALI-IP": "192.168.102.40",
+        "cdcCentOS-NIC": "cdcCentOS-NIC",
+        "cdcCentOS-IP": "192.168.102.75",
+        "cdcDSMa-NIC": "cdcDSMa-NIC",
+        "cdcDSMa-IP": "192.168.102.96",
+        "cdcDSMb-NIC": "cdcDSMb-NIC",
+        "cdcDSMb-IP": "192.168.102.97",
+        "cdcdocker-NIC": "cdcdocker-NIC",
+        "cdcdocker-IP": "192.168.102.125",
+        "cdcdc": "cdcdc",
+        "cdcSLES": "cdcSLES",
+        "cdcWeb1": "cdcWeb1",
+        "cdcTen1": "cdcTen1",
+        "cdcKALI": "cdcKALI",
+        "cdcCentOS": "cdcCentOS",
+        "cdcDSMa": "cdcDSMa",
+        "cdcDSMb": "cdcDSMb",
+        "cdcdocker": "cdcdocker"
+        },
+    "resources": [
+//      Create storage account
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+              "name": "Standard_LRS",
+              "tier": "Standard"
+            },
+            "kind": "Storage",
+            "name": "[variables('uniqueName')]",
+            "apiVersion": "[variables('apiVersion-storage')]",
+            "location": "[variables('location')]",
+            "scale": null,
+            "properties": {},
+            "dependsOn": []
+          },
+//      Create virtual network and subnet
+          {
+            "comments": "Create virtual network and subnet",            
+            "apiVersion": "2017-06-01",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('uniqueName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+              "addressSpace": {
+                "addressPrefixes": [
+                  "192.168.102.0/24"
+                ]
+              },
+              "subnets": [
+                {
+                  "name": "[variables('uniqueName')]",
+                  "properties": {
+                    "addressPrefix": "192.168.102.0/24"
+                  }
+                }
+              ]
+            }
+          },
+//      Create network security groups
+          {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('uniqueName')]",
+            "apiVersion": "[variables('apiVersion-network')]",
+            "location": "[variables('location')]",
+            "properties": {
+              "securityRules": [
+                {
+                  "name": "[variables('uniqueName')]",
+                  "properties": {
+                    "protocol": "Tcp",
+                    "sourcePortRange": "*",
+                    "destinationPortRange": "3389",
+                    "sourceAddressPrefix": "*",
+                    "destinationAddressPrefix": "*",
+                    "access": "Allow",
+                    "priority": 1001,
+                    "direction": "Inbound",
+                    "sourceAddressPrefixes": [],
+                    "destinationAddressPrefixes": []
+                  }
+                }
+              ]
+            }
+          },
+// Network adapters
+{
+  "comments": "cdcdc",
+  "type": "Microsoft.Network/networkInterfaces",
+  "name": "[concat(variables('cdcdc-NIC'), '-', variables('uniqueName'))]",
+  "apiVersion": "[variables('apiVersion-network')]",
+  "location": "[variables('location')]",
+  "properties": {
+    "ipConfigurations": [
+      {
+        "name": "ipconfig1",
+        "properties": {
+          "privateIPAddress": "[variables('cdcdc-IP')]",
+          "privateIPAllocationMethod": "Static",
+          "subnet": {
+            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
+          },
+          "primary": true,
+          "privateIPAddressVersion": "IPv4"
+        }
+      }
+    ],
+    "dnsSettings": {
+      "dnsServers": [],
+      "appliedDnsServers": []
+    },
+    "enableAcceleratedNetworking": false,
+    "enableIPForwarding": false
+  },
+  "dependsOn": [
+    "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
+  ]
+},
+{
+  "comments": "cdcSLES",
+  "type": "Microsoft.Network/networkInterfaces",
+  "name": "[concat(variables('cdcSLES-NIC'), '-', variables('uniqueName'))]",
+  "apiVersion": "[variables('apiVersion-network')]",
+  "location": "[variables('location')]",
+  "properties": {
+    "ipConfigurations": [
+      {
+        "name": "ipconfig1",
+        "properties": {
+          "privateIPAddress": "[variables('cdcSLES-IP')]",
+          "privateIPAllocationMethod": "Static",
+          "subnet": {
+            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
+          },
+          "primary": true,
+          "privateIPAddressVersion": "IPv4"
+        }
+      }
+    ],
+    "dnsSettings": {
+      "dnsServers": [],
+      "appliedDnsServers": []
+    },
+    "enableAcceleratedNetworking": false,
+    "enableIPForwarding": false
+  },
+  "dependsOn": [
+    "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
+  ]
+}
+  ]
+}

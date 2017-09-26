@@ -5,9 +5,7 @@
   "variables": {
     "apiVersion-network": "2017-09-01",
     "apiVersion-storage": "2017-06-01",
-    "storageName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
-    "networkName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
-    "subnetName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+    "randomizer": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
     "location": "[resourceGroup().location]"
   },
   "resources": [
@@ -18,7 +16,7 @@
         "tier": "Standard"
       },
       "kind": "Storage",
-      "name": "[variables('storageName')]",
+      "name": "[variables('randomizer')]",
       "apiVersion": "[variables('apiVersion-storage')]",
       "location": "[variables('location')]",
       "scale": null,
@@ -28,7 +26,7 @@
     {
       "apiVersion": "[variables('apiVersion-network')]",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('networkName')]",
+      "name": "[variables('randomizer')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "addressSpace": {
@@ -38,7 +36,7 @@
         },
         "subnets": [
           {
-            "name": "[variables('subnetName')]",
+            "name": "[variables('randomizer')]",
             "properties": {
               "addressPrefix": "192.168.102.0/24"
             }

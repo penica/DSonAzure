@@ -6,9 +6,7 @@
     "variables": {
         "apiVersion-network": "2017-09-01",
         "location": "[resourceGroup().location]",
-		"SecurityGroupName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
-        "securityRuleName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
-        "publicIPName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]"
+		"randomizer": "[toLower( concat(uniqueString(resourceGroup().id) ) )]"
     },
     "resources": [
         {
@@ -19,7 +17,7 @@
             "properties": {
                 "securityRules": [
                     {
-                        "name": "[variables('securityRuleName')]",
+                        "name": "[variables('randomizer')]",
                         "properties": {
                             "protocol": "Tcp",
                             "sourcePortRange": "*",
@@ -34,11 +32,14 @@
                         }
                     }
                 ]
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('randomizer'))]"
+            ]
         },
         {
             "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[variables('publicIPName')]",
+            "name": "[variables('randomizer')]",
             "apiVersion": "[variables('apiVersion-network')]",
             "location": "[variables('location')]",
             "properties": {

@@ -1,16 +1,60 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    
-    "parameters": {},
+    "parameters": {
+      "adminUsername": {
+        "type": "string",
+        "defaultValue": "trend-admin"
+      },
+      "adminPassword": {
+        "type": "securestring",
+        "defaultValue": "TrendMicro2017!",
+        "metadata": {
+          "description": "Default password is: TrendMicro2017!"
+        }
+      },
+      "virtualMachineSize": {
+        "type": "string",
+        "defaultValue": "Basic_A1"
+      }
+    },
     "variables": {
-        "templateBaseUrl": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/postgresql-on-ubuntu/",
-        "sharedTemplateUrl": "[concat(variables('templateBaseUrl'), 'shared-resources.json')]",
-        "vmTemplateUrl": "[concat(variables('templateBaseUrl'), 'database-2disk-resources.json')]"
+      "apiVersion-network": "2017-09-01",
+      "apiVersion-storage": "2017-06-01",
+      "apiVersion-Windows": "2016-04-30-preview",
+      "apiVersion-Disk": "2017-03-30",
+      "uniqueName": "[toLower( concat(uniqueString(resourceGroup().id) ) )]",
+      "location": "[resourceGroup().location]",
+      "cdcdc-NIC": "cdcdc-NIC",
+      "cdcdc-IP": "192.168.102.10",
+      "cdcSLES-NIC": "cdcSLES-NIC",
+      "cdcSLES-IP": "192.168.102.21",
+      "cdcWeb1-NIC": "cdcWeb1-NIC",
+      "cdcWeb1-IP": "192.168.102.22",
+      "cdcTen1-NIC": "cdcTen1-NIC",
+      "cdcTen1-IP": "192.168.102.39",
+      "cdcKALI-NIC": "cdcKALI-NIC",
+      "cdcKALI-IP": "192.168.102.40",
+      "cdcCentOS-NIC": "cdcCentOS-NIC",
+      "cdcCentOS-IP": "192.168.102.75",
+      "cdcDSMw-NIC": "cdcDSMa-NIC",
+      "cdcDSMw-IP": "192.168.102.96",
+      "cdcDSMdb-NIC": "cdcDSMb-NIC",
+      "cdcDSMdb-IP": "192.168.102.97",
+      "cdcdocker-NIC": "cdcdocker-NIC",
+      "cdcdocker-IP": "192.168.102.125",
+      "cdcdc": "cdcdc",
+      "cdcSLES": "cdcSLES",
+      "cdcWeb1": "cdcWeb1",
+      "cdcTen1": "cdcTen1",
+      "cdcKALI": "cdcKALI",
+      "cdcCentOS": "cdcCentOS",
+      "cdcDSMw": "cdcDSMa",
+      "cdcDSMdb": "cdcDSMb",
+      "cdcdocker": "cdcdocker"
     },
     "resources": [
-// #Create Storage 
-    {
+      {
         "type": "Microsoft.Storage/storageAccounts",
         "sku": {
           "name": "Standard_LRS",
@@ -23,9 +67,8 @@
         "scale": null,
         "properties": {},
         "dependsOn": []
-        },
-// #Create virtual Network and subnetes
-    {
+      },
+      {
         "apiVersion": "[variables('apiVersion-network')]",
         "type": "Microsoft.Network/virtualNetworks",
         "name": "[variables('uniqueName')]",
@@ -38,55 +81,51 @@
           },
           "subnets": [
             {
-              "name": "[variables('subnetName')]",
+              "name": "[variables('uniqueName')]",
               "properties": {
                 "addressPrefix": "192.168.102.0/24"
               }
             }
           ]
         }
-        },
-// #Create Security Policy - Allow RDP to Jump Box
+      },
       {
         "type": "Microsoft.Network/networkSecurityGroups",
         "name": "[variables('uniqueName')]",
         "apiVersion": "[variables('apiVersion-network')]",
         "location": "[variables('location')]",
         "properties": {
-            "securityRules": [
-                {
-                    "name": "[variables('uniqueName')]",
-                    "properties": {
-                        "protocol": "Tcp",
-                        "sourcePortRange": "*",
-                        "destinationPortRange": "3389",
-                        "sourceAddressPrefix": "*",
-                        "destinationAddressPrefix": "*",
-                        "access": "Allow",
-                        "priority": 1001,
-                        "direction": "Inbound",
-                        "sourceAddressPrefixes": [],
-                        "destinationAddressPrefixes": []
-                    }
-                }
-            ]
+          "securityRules": [
+            {
+              "name": "[variables('uniqueName')]",
+              "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3389",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 1001,
+                "direction": "Inbound",
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            }
+          ]
         }
-    },
-// #Create Public IP address for Jump Box
-    {
+      },
+      {
         "type": "Microsoft.Network/publicIPAddresses",
         "name": "[variables('uniqueName')]",
         "apiVersion": "[variables('apiVersion-network')]",
         "location": "[variables('location')]",
         "properties": {
-            "publicIPAddressVersion": "IPv4",
-            "publicIPAllocationMethod": "Static",
-            "idleTimeoutInMinutes": 4
+          "publicIPAddressVersion": "IPv4",
+          "publicIPAllocationMethod": "Static",
+          "idleTimeoutInMinutes": 4
         }
-    },
-// #Create NICs for Virtual Machines
-
-    {
+      },
+      {
         "comments": "cdcdc",
         "type": "Microsoft.Network/networkInterfaces",
         "name": "[concat(variables('cdcdc-NIC'), '-', variables('uniqueName'))]",
@@ -100,10 +139,10 @@
                 "privateIPAddress": "[variables('cdcdc-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "publicIPAddress": {
-                  "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('uniqueName'))]"
                 },
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -117,12 +156,12 @@
           "enableAcceleratedNetworking": false,
           "enableIPForwarding": false,
           "networkSecurityGroup": {
-            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('subnetName'))]"
+            "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('uniqueName'))]"
           }
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcSLES",
@@ -138,7 +177,7 @@
                 "privateIPAddress": "[variables('cdcSLES-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -154,7 +193,7 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcWeb1",
@@ -170,7 +209,7 @@
                 "privateIPAddress": "[variables('cdcWeb1-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -186,7 +225,7 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcTen1",
@@ -202,7 +241,7 @@
                 "privateIPAddress": "[variables('cdcTen1-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -218,7 +257,7 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcKALI",
@@ -234,7 +273,7 @@
                 "privateIPAddress": "[variables('cdcKALI-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -250,7 +289,7 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcCentOS",
@@ -266,7 +305,7 @@
                 "privateIPAddress": "[variables('cdcCentOS-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -282,7 +321,7 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcDSMa-IP",
@@ -298,7 +337,7 @@
                 "privateIPAddress": "[variables('cdcDSMa-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -314,7 +353,7 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcDSMb",
@@ -330,7 +369,7 @@
                 "privateIPAddress": "[variables('cdcDSMb-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -346,7 +385,7 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
       },
       {
         "comments": "cdcdocker",
@@ -362,7 +401,7 @@
                 "privateIPAddress": "[variables('cdcdocker-IP')]",
                 "privateIPAllocationMethod": "Static",
                 "subnet": {
-                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('subnetName'), variables('subnetName'))]"
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('uniqueName'), variables('uniqueName'))]"
                 },
                 "primary": true,
                 "privateIPAddressVersion": "IPv4"
@@ -378,7 +417,29 @@
         },
         "dependsOn": [
           "[resourceId('Microsoft.Network/virtualNetworks', variables('uniqueName'))]"
-      ]
+        ]
+      },
+      {
+        "comments": "Jump Box OS disk",
+        "type": "Microsoft.Compute/disks",
+        "name": "[concat(variables('cdcdc'), '-OS-Disk-', variables('uniqueName'))]",
+        "apiVersion": "[variables('apiVersion-Windows')]",
+        "location": "[variables('location')]",
+        "scale": null,
+        "properties": {
+          "accountType": "Standard_LRS",
+          "osType": "Windows",
+          "creationData": {
+            "createOption": "FromImage",
+            "imageReference": {
+              "id": "[concat'/Subscriptions/b7cc3f18-f869-4e78-b2bb-e2ccc363ccad/Providers/Microsoft.Compute/Locations/',variables('location'),'/Publishers/MicrosoftWindowsServer/ArtifactTypes/VMImage/Offers/WindowsServer/Skus/2008-R2-SP1/Versions/latest'"
+            }
+          },
+          "diskSizeGB": 128
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts', variables('uniqueName'))]"
+        ]
       }
     ]
   }
